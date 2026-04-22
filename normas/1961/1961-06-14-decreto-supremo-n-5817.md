@@ -1,0 +1,46 @@
+---
+title: "Decreto Supremo N° 5817"
+date: "1961-06-14"
+summary: "05 DE JUNIO DE 1961 .- Confiérese la Condecoración de la Orden del \"Cóndor de los Andes\" en el Grado de Oficial al señor Coronel Germán Otto Müller."
+resumen: "05 DE JUNIO DE 1961 .- Confiérese la Condecoración de la Orden del \"Cóndor de los Andes\" en el Grado de Oficial al señor Coronel Germán Otto Müller."
+description: "05 DE JUNIO DE 1961 .- Confiérese la Condecoración de la Orden del \"Cóndor de los Andes\" en el Grado de Oficial al señor Coronel Germán Otto Müller."
+edicion: "39"
+fecha_publicacion: "1961-06-14"
+url_pdf: "http://www.gacetaoficialdebolivia.gob.bo/normas/descargarPdf/186"
+status: "vigente"
+categories:
+  - "Edición: 39"
+format:
+  html:
+    toc: true
+url_word: "http://www.gacetaoficialdebolivia.gob.bo/normas/verGratis_gob1/186"
+---
+DECRETO SUPREMO Nº 05817
+
+VICTOR PAZ ESTENSSORO
+
+PRESIDENTE CONSTITUCIONAL D ELA REPÚBLICA
+
+Y
+
+GRAN MAESTRE DE LA ORDEN DEL “CÓNDOR
+
+DE LOS ANDES”
+
+CONSIDERANDO:
+
+Que el Decreto Supremo de fecha 18 de abril de 1952, creó la Condecoración de la Orden del “Cóndor de los Andes” para recompensar servicios prestados a la Nación por ciudadanos extranjeros.
+
+Que el señor Coronel Germán Otto Müller, Agregado Militar y Aeronáutico de la República de Chile, durante el tiempo que desempeñó sus funciones ha contribuido eficazmente a estrechar los vínculos de amistad que mantienen Bolivia y Chile.
+
+Que el señor Coronel Germán Otto Müller ha manifestado simpatía hacia Bolivia y comprensión de sus problemas haciéndose por ello merecedor a una distinción especial de la República.
+
+DECRETA:
+
+ARTÍCULO ÚNICO.-Confiérese la Condecoración de la Orden del “Cóndor de los Andes” en el Grado de Oficial al señor Coronel Germán Otto Müller.
+
+El señor Ministro de Estado en el Despacho de Relaciones Exteriores y Culto, queda encargado de la ejecución y cumplimiento del presente Decreto.
+
+Es dado en el Palacio de Gobierno de la ciudad de La Paz, a los cinco días del mes de junio de mil novecientos sesenta y un años.
+
+FDO. VICTOR PAZ ESTENSSORO,Eduardo Arze Quiroga.
