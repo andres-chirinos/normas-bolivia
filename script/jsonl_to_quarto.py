@@ -167,18 +167,7 @@ def construir_frontmatter(norma: Norma) -> str:
 
 
 def construir_cuerpo(norma: Norma) -> str:
-    partes = [
-        norma.norma_markdown or "Contenido no disponible.",
-        "",
-    ]
-
-    if norma.url_pdf:
-        partes.append(f"[Ver PDF original]({norma.url_pdf})")
-    else:
-        partes.append("PDF original no disponible.")
-
-    partes.append("")
-    return "\n".join(partes)
+    return f"{norma.norma_markdown or 'Contenido no disponible.'}\n"
 
 
 def construir_nombre_archivo(norma: Norma) -> tuple[str, str]:
