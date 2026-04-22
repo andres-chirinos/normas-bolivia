@@ -1,0 +1,11 @@
+# Decreto Supremo N° 25235
+
+Edición: 3
+
+30 DE DICIEMBRE DE 1899 .- PROGRAMA NACIONAL DE MEDICAMENTOS ESENCIALES DE BOLIVIA
+
+Fecha de publicación
+
+15 de enero de 1999
+
+\[NORMA_NO_DISPONIBLE_EN_HTML\]
