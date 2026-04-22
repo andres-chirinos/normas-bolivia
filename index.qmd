@@ -1,0 +1,13 @@
+---
+title: "Gaceta Oficial de Normas"
+listing:
+  contents: normas
+  type: table
+  sort: "date desc"
+  filter-ui: true
+  categories: true
+---
+
+Portal colaborativo y abierto para consultar leyes, decretos y normas publicadas en la Gaceta Oficial.
+
+Usa los filtros para navegar por categorías, buscar por texto y ordenar por fecha.

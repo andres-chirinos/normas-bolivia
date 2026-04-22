@@ -1,0 +1,27 @@
+project:
+  type: website
+
+website:
+  title: "Normas Bolivia"
+  description: "Portal estático y colaborativo para consulta de leyes y decretos de Bolivia."
+  site-url: "https://datosbolivia.github.io/normas-bolivia/"
+  repo-url: "https://github.com/datosbolivia/normas-bolivia"
+  repo-actions: [edit, issue]
+  
+  search: true
+  llms-txt: true
+
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - href: about.qmd
+        text: Sobre el Proyecto
+
+format:
+  html:
+    lang: es
+    toc: true
+
+
+

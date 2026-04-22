@@ -1,0 +1,9 @@
+*.json
+*__pycache__*
+/.quarto/
+**/*.quarto_ipynb
+_quarto-dev10.yml
+/_site/
+*.md
+*.html
+/site_libs/
