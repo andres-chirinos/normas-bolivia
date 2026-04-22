@@ -6,6 +6,11 @@ import re
 import os
 from urllib.parse import urljoin
 
+try:
+    from markdownify import markdownify as md
+except ImportError:
+    md = None
+
 BASE_URL = "http://www.gacetaoficialdebolivia.gob.bo"
 REQUEST_TIMEOUT_SECONDS = 60
 DEFAULT_HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -62,6 +67,27 @@ def _html_a_markdown(nodo):
         return f"{contenido}\n\n" if contenido else ""
 
     return contenido
+
+
+def _html_a_markdown_moderno(nodo):
+    """Conversión HTML -> Markdown usando markdownify cuando está disponible."""
+    if nodo is None:
+        return ""
+
+    # Evita convertir elementos que no aportan al contenido normativo.
+    for tag in nodo.find_all(["script", "style", "title", "hr", "img"]):
+        tag.decompose()
+
+    if md is None:
+        # Fallback: conserva comportamiento previo si markdownify no está instalado.
+        return _html_a_markdown(nodo)
+
+    return md(
+        str(nodo),
+        heading_style="ATX",
+        bullets="-",
+        strip=["script", "style", "title", "hr", "img"],
+    )
 
 
 def _normalizar_markdown(texto):
@@ -221,7 +247,7 @@ def descargar_norma_markdown(
     for nodo in cuerpo.find_all(["fieldset", "img", "script", "style", "title", "hr"]):
         nodo.decompose()
 
-    markdown = _html_a_markdown(cuerpo)
+    markdown = _html_a_markdown_moderno(cuerpo)
     markdown = _normalizar_markdown(markdown)
     if not markdown:
         return "[NORMA_NO_DISPONIBLE_EN_HTML]"
