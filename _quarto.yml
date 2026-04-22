@@ -4,8 +4,8 @@ project:
 website:
   title: "Normas Bolivia"
   description: "Portal estático y colaborativo para consulta de leyes y decretos de Bolivia."
-  site-url: "https://datosbolivia.github.io/normas-bolivia/"
-  repo-url: "https://github.com/datosbolivia/normas-bolivia"
+  site-url: "https://www.andreschirinos.com/normas-bolivia/"
+  repo-url: "https://github.com/andres-chirinos/normas-bolivia"
   repo-actions: [edit, issue]
   
   search: true

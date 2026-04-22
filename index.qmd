@@ -1,5 +1,5 @@
 ---
-title: "Gaceta Oficial de Normas"
+title: "Normas Bolivia"
 listing:
   contents: normas
   type: table
