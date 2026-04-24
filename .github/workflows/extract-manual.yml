@@ -1,0 +1,68 @@
+name: Manual Gaceta Extraction
+
+on:
+  workflow_dispatch:
+    inputs:
+      fecha_inicio:
+        description: "Fecha inicio (YYYY-MM-DD)"
+        required: true
+        type: string
+      fecha_fin:
+        description: "Fecha fin (YYYY-MM-DD)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-extract
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 markdownify
+
+      - name: Run Manual Extraction (Append + Dedupe)
+        run: |
+          python script/download_gaceta.py \
+            --fecha-inicio "${{ inputs.fecha_inicio }}" \
+            --fecha-fin "${{ inputs.fecha_fin }}" \
+            --output-jsonl data/archivo_gaceta_bolivia.jsonl \
+            --append \
+            --log-file /tmp/download_gaceta.log
+
+      - name: Regenerate Quarto Norm Files
+        run: |
+          python script/jsonl_to_quarto.py \
+            --input data/archivo_gaceta_bolivia.jsonl \
+            --output-dir normas \
+            --skip-existing
+
+      - name: Commit And Push If Changes
+        run: |
+          if git diff --quiet; then
+            echo "No hay cambios para commitear."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/archivo_gaceta_bolivia.jsonl normas
+          git commit -m "chore: extraccion manual gaceta (${GITHUB_RUN_ID})"
+          git push

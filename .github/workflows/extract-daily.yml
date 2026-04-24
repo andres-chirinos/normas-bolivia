@@ -1,0 +1,66 @@
+name: Daily Gaceta Extraction
+
+on:
+  schedule:
+    # 00:00 en Bolivia (UTC-4) => 04:00 UTC
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-extract
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    env:
+      LOOKBACK_DAYS: "3"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 markdownify
+
+      - name: Run Daily Extraction
+        run: |
+          START_DATE="$(TZ=America/La_Paz date -d "-${LOOKBACK_DAYS} days" +%F)"
+          END_DATE="$(TZ=America/La_Paz date +%F)"
+          python script/download_gaceta.py \
+            --fecha-inicio "$START_DATE" \
+            --fecha-fin "$END_DATE" \
+            --output-jsonl data/archivo_gaceta_bolivia.jsonl \
+            --append \
+            --log-file /tmp/download_gaceta.log
+
+      - name: Regenerate Quarto Norm Files
+        run: |
+          python script/jsonl_to_quarto.py \
+            --input data/archivo_gaceta_bolivia.jsonl \
+            --output-dir normas \
+            --skip-existing
+
+      - name: Commit And Push If Changes
+        run: |
+          if git diff --quiet; then
+            echo "No hay cambios para commitear."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/archivo_gaceta_bolivia.jsonl normas
+          git commit -m "chore: actualizacion diaria gaceta ($(TZ=America/La_Paz date +%F))"
+          git push

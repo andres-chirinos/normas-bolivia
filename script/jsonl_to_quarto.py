@@ -188,11 +188,12 @@ def garantizar_nombre_unico(destino_dir: Path, base_nombre: str) -> Path:
     return destino_dir / f"{base_nombre}.md"
 
 
-def convertir_jsonl_a_quarto(path_jsonl: Path, out_dir: Path) -> None:
+def convertir_jsonl_a_quarto(path_jsonl: Path, out_dir: Path, skip_existing: bool = False) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     total = 0
     escritos = 0
+    omitidos = 0
     for item in iter_jsonl(path_jsonl):
         total += 1
         norma = normalizar_norma(item)
@@ -202,6 +203,9 @@ def convertir_jsonl_a_quarto(path_jsonl: Path, out_dir: Path) -> None:
         destino_dir.mkdir(parents=True, exist_ok=True)
 
         destino_archivo = garantizar_nombre_unico(destino_dir, base_nombre)
+        if skip_existing and destino_archivo.exists():
+            omitidos += 1
+            continue
 
         contenido = construir_frontmatter(norma) + construir_cuerpo(norma)
         destino_archivo.write_text(contenido, encoding="utf-8")
@@ -210,7 +214,10 @@ def convertir_jsonl_a_quarto(path_jsonl: Path, out_dir: Path) -> None:
         if escritos % 500 == 0:
             print(f"Progreso: {escritos} archivos generados...")
 
-    print(f"Conversión finalizada. Registros leídos: {total}. Archivos creados: {escritos}.")
+    print(
+        "Conversión finalizada. "
+        f"Registros leídos: {total}. Archivos creados: {escritos}. Omitidos por existentes: {omitidos}."
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -229,6 +236,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_OUTPUT_DIR,
         help="Directorio base de salida para archivos markdown.",
     )
+    parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        help="Si el archivo .md ya existe, no lo sobrescribe.",
+    )
     return parser.parse_args()
 
 
@@ -236,7 +248,7 @@ def main() -> None:
     args = parse_args()
     if not args.input.exists():
         raise FileNotFoundError(f"No se encontró el archivo JSONL: {args.input}")
-    convertir_jsonl_a_quarto(args.input, args.output_dir)
+    convertir_jsonl_a_quarto(args.input, args.output_dir, skip_existing=args.skip_existing)
 
 
 if __name__ == "__main__":

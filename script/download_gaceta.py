@@ -282,6 +282,35 @@ def _append_jsonl(file_path, item):
         raise
 
 
+def _cargar_firmas_existentes_jsonl(file_path):
+    file_path = Path(file_path)
+    firmas = set()
+    if not file_path.exists():
+        return firmas
+
+    try:
+        with file_path.open("r", encoding="utf-8") as fh:
+            for numero_linea, line in enumerate(fh, start=1):
+                row = line.strip()
+                if not row:
+                    continue
+                try:
+                    item = json.loads(row)
+                except json.JSONDecodeError as exc:
+                    _registrar_error(
+                        f"JSON inválido en {file_path} línea {numero_linea}",
+                        exc,
+                    )
+                    continue
+                if isinstance(item, dict):
+                    firmas.add(_firma_norma(item))
+    except OSError as exc:
+        _registrar_error(f"No se pudo leer {file_path} para deduplicar", exc, nivel="error")
+        raise
+
+    return firmas
+
+
 def _jsonl_a_json(jsonl_path, json_path):
     try:
         with open(jsonl_path, "r", encoding="utf-8") as src, open(
@@ -377,6 +406,7 @@ def extraer_normativas(
     reset_output_jsonl=False,
     resume=False,
     state_file_path=DEFAULT_STATE_FILE,
+    dedupe_existing=False,
 ):
     # La URL base utiliza la convención de CakePHP para la paginación (/page:X)
     base_url = f"http://www.gacetaoficialdebolivia.gob.bo/normas/buscarFecha/{fecha_inicio}/{fecha_fin}/page:{{}}"
@@ -413,6 +443,11 @@ def extraer_normativas(
         except OSError as exc:
             _registrar_error(f"No se pudo inicializar {output_jsonl_path}", exc, nivel="error")
             raise
+
+    firmas_existentes = set()
+    if output_jsonl_path and dedupe_existing and not reset_output_jsonl:
+        firmas_existentes = _cargar_firmas_existentes_jsonl(output_jsonl_path)
+        LOGGER.info("Deduplicación activada. Firmas existentes: %s", len(firmas_existentes))
 
     pagina = int(estado_resumen.get("pagina") or pagina_inicial)
     indice_tarjeta_inicio = int(estado_resumen.get("indice_tarjeta") or 0)
@@ -512,8 +547,18 @@ def extraer_normativas(
                         norma["url_word"], rate_limit_state=rate_limit_state
                     )
 
-                if output_jsonl_path:
-                    _append_jsonl(output_jsonl_path, norma)
+                firma_actual = _firma_norma(norma)
+                if output_jsonl_path and dedupe_existing and firma_actual in firmas_existentes:
+                    LOGGER.info(
+                        "Norma ya existente, se omite append (página %s, tarjeta %s): %s",
+                        pagina,
+                        indice_tarjeta + 1,
+                        norma.get("titulo"),
+                    )
+                else:
+                    if output_jsonl_path:
+                        _append_jsonl(output_jsonl_path, norma)
+                    firmas_existentes.add(firma_actual)
 
                 todas_las_normas.append(norma)
 
@@ -581,6 +626,11 @@ def _parse_args():
         help="Ruta del archivo JSONL de salida.",
     )
     parser.add_argument(
+        "--append",
+        action="store_true",
+        help="No sobrescribe el JSONL; agrega solo normas nuevas al final.",
+    )
+    parser.add_argument(
         "--resume",
         action="store_true",
         help="Reanuda desde el último checkpoint guardado.",
@@ -623,9 +673,10 @@ if __name__ == "__main__":
             pagina_inicial=args.pagina_inicial,
             paginas_a_extraer=args.paginas_a_extraer,
             output_jsonl_path=args.output_jsonl,
-            reset_output_jsonl=not args.resume,
+            reset_output_jsonl=not (args.resume or args.append),
             resume=args.resume,
             state_file_path=args.state_file,
+            dedupe_existing=args.resume or args.append,
         )
 
         _borrar_estado_resumen(args.state_file)
